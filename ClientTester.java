@@ -1,7 +1,4 @@
 import java.net.*;
-
-import org.omg.CORBA.UNKNOWN;
-
 import java.io.*;
 
 
@@ -9,13 +6,13 @@ public class ClientTester {
 
     // Init Socket & IO
     private Socket socket = null;
-    private DataInputStream input = null;
+    private BufferedReader input = null;
     private DataOutputStream output = null;
 
     // This code is for a client. We are opening a socket on the 
     // specified device.
     public ClientTester(String address, int port){
-
+ 
         // String data we want to send.
         String dataToSend = "";
 
@@ -24,18 +21,17 @@ public class ClientTester {
             // Create socket object. This opens the socket.
             socket = new Socket(address, port);
             // Print status of socket.
-            System.out.println("Socket at : " + address 
-                                + " via port: " + str(port));
+            System.out.println("Socket");
 
             // This is what we want to send over the socket.
-            input = new DataInputStream(System.in);
+            input = new BufferedReader(new InputStreamReader(System.in));
             output = new DataOutputStream(System.out);
         }
         catch(UnknownHostException unknown) {
             System.out.println("ERROR: " + unknown);
         }
         catch(IOException err){
-            System.out.println("ERROR: " + err);
+            System.out.println("ERROR (Client try 1): " + err);
         }
 
         // Gather data.
@@ -43,10 +39,10 @@ public class ClientTester {
 
             try {
                 dataToSend = input.readLine();
-                out.writeUTF(dataToSend);
+                output.writeUTF(dataToSend);
             }
             catch(IOException err){
-                System.out.println(err);
+                System.out.println("Client based error. Bad IO. " + err);
             }
         }
 
@@ -67,11 +63,6 @@ public class ClientTester {
         System.out.println("Testing Java stuff.\n\n");
         
         // Starting the client.
-        ClientTester client = new ClientTester("127.0.0.1", 5000);
-
-
-
+        ClientTester client = new ClientTester("121.0.0.1", 5000);
     }
-
-
 }
