@@ -1,51 +1,42 @@
 import java.net.*;
 import java.io.*;
 
+public class ServerTester{
 
-public class ServerTester {
-
-    // Init stuff cause java.
     private Socket socket = null;
-    // Not sure what this is. look into this.
     private ServerSocket server = null;
-    private DataInputStream clientInput = null;
+    private DataInputStream inputFromCLient = null;
+    
+    // Going to write data to a file.
+    private PrintWriter writer = null;
 
-    public ServerTester(int port){
+    // Stores the data we will write to the file.
+    private String dataFromClient;
 
-        String dataReceived = "";
+    // Creates socket connection.
+    public ServerTester(int port, String fileToWriteTo){
 
-        try {
-            // Starts server.
+        // Socket Methods throw exceptions.
+        // Try to establish a connection.
+        try{
             server = new ServerSocket(port);
-            System.out.println("Server started.");
             System.out.println("Waiting on client...");
 
-            // Program waits here until a client connects.
+            // When a connection is accepted, server continues.
             socket = server.accept();
-            System.out.println("Client connected.");
+            System.out.println("Connection established.");
 
-            clientInput = new DataInputStream(
+            // Take input from the client via the socket's input
+            // stream.
+            inputFromCLient = new DataInputStream(
                 new BufferedInputStream(socket.getInputStream()));
 
-            // Get data while "over" hasn't been received.
-            while(!dataReceived.equals("Over")){
+            // Read data.
+            getDataFromClient();
+            // Close connection.
+            closeConnection();
 
-                try{
-                    dataReceived = clientInput.readUTF();
-                    System.out.println(dataReceived);
-                }
-                catch(IOException err){
-                    System.out.println("server side error: " + err);
-                }
-
-                System.out.println(dataReceived);
-            }
-
-            System.out.println("Closing connection");
             
-            // Close
-            socket.close();
-            clientInput.close();
         }
         catch(IOException err){
             System.out.println(err);
@@ -53,7 +44,30 @@ public class ServerTester {
     }
 
     public static void main(String[] args) {
-        // Create server.
-        ServerTester server = new ServerTester(5000);
+        ServerTester server = new ServerTester(5000, "poop");
     }
+
+    private void getDataFromClient(){
+        try{
+            dataFromClient = inputFromCLient.readUTF();
+            System.out.println(dataFromClient);
+        }
+        catch(IOException err){
+            System.out.println(err);
+        }
+    }
+    
+    private void closeConnection(){
+        
+        try{
+            socket.close();
+            inputFromCLient.close();
+        }
+        catch(IOException err){
+            System.out.println(err);
+        }
+
+        System.out.println("Connection terminated.");
+    }
+
 }
